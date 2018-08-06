@@ -49,5 +49,37 @@ public class Utils {
         return writer.toString();
   }
 	
+		/**
+	 * url 커팅
+	 * @param uriPath
+	 * @return
+	 */
+	public static String[] getUri(String uriPath, String context) {
+		
+		Pattern pattern = Pattern.compile(context);
+		Matcher match = pattern.matcher(uriPath);
+		
+		return match.replaceAll("").split("/");
+	}
+	
+	/**
+	 * url 재조립 (context 형태는 앞에 '/' 없어야 함)
+	 * @param cutUri
+	 * @param context
+	 * @return
+	 */
+	public static String getUrl(String[] cutUri, String context) {
+		int index = 0;
+		StringBuffer url = new StringBuffer();
+		
+		for(String item : cutUri) {
+			if(index == 1) {
+				url.append(context);
+			}
+			url.append(item).append("/");
+			index++;
+		}
+		return url.toString();
+	}
 	
 }
