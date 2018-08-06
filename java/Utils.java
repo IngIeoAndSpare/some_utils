@@ -81,5 +81,29 @@ public class Utils {
 		}
 		return url.toString();
 	}
+
+	/**
+	 * get url 일 경우 (query params 처리)
+	 * @param cutUri
+	 * @param context
+	 * @param params
+	 * @return
+	 */
+	public static String getUrl(String[] cutUri, String context, Map<String, String[]> params) {
+		int idx = 0;
+		String convertUrl = getUrl(cutUri, context);
+		StringBuffer urlBuild = new StringBuffer(convertUrl);
+		
+		urlBuild.append("?");
+		for(Map.Entry<String, String[]> item : params.entrySet()) { //set url query params
+			if(idx > 0){
+				urlBuild.append("&");
+			}
+			urlBuild.append(String.format("%s=%s", item.getKey(), item.getValue()));
+			idx++;
+		}
+		
+		return urlBuild.toString();
+	}
 	
 }
