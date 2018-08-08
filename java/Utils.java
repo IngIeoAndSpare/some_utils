@@ -36,6 +36,20 @@ public class Utils {
 			return false;
 		}
 	}
+
+	/**
+	 * 배열 문자 null check (null 있으면 false , 없으면 true)
+	 * @param str
+	 * @return
+	 */
+	public static boolean checkNullStr(String[] str) {
+		for(String item : str) {
+			if(!checkNullStr(item)){
+				return false;
+			}
+		}
+		return true;
+	}
 	
 	/**
 	 * 예외 -> String 변환 
@@ -81,29 +95,34 @@ public class Utils {
 		}
 		return url.toString();
 	}
-
+	
 	/**
-	 * get url 일 경우 (query params 처리)
-	 * @param cutUri
-	 * @param context
-	 * @param params
+	 * 사이값 체크 (사이값에 있으면 true 아니면 false)
+	 * @param inputNum
+	 * @param minValue
+	 * @param maxValue
 	 * @return
 	 */
-	public static String getUrl(String[] cutUri, String context, Map<String, String[]> params) {
-		int idx = 0;
-		String convertUrl = getUrl(cutUri, context);
-		StringBuffer urlBuild = new StringBuffer(convertUrl);
-		
-		urlBuild.append("?");
-		for(Map.Entry<String, String[]> item : params.entrySet()) { //set url query params
-			if(idx > 0){
-				urlBuild.append("&");
-			}
-			urlBuild.append(String.format("%s=%s", item.getKey(), item.getValue()));
-			idx++;
+	public static boolean betweenNumCheck(int inputNum, int minValue, int maxValue) {
+		if (inputNum >= minValue && inputNum <= maxValue) {
+			return true;
+		} else {
+			return false;
 		}
-		
-		return urlBuild.toString();
+	}
+
+
+	public static String getQueryString(Map<String, String[]> params) {
+		StringBuffer result = new StringBuffer("?");
+		for(Map.Entry<String, String[]> item : params.entrySet()) {
+			result.append(Utils.getAppendParam(item.getKey(), item.getValue()[0]));
+			result.append("&");
+		}
+		return result.toString().substring(0, result.length() - 1);
 	}
 	
+	public static String getAppendParam(String key, String value) {
+		return String.format("%s=%s", key, value);
+	}
+
 }
