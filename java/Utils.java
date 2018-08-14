@@ -111,7 +111,11 @@ public class Utils {
 		}
 	}
 
-
+	/**
+	 * 일반 쿼리 스트링 append
+	 * @param params
+	 * @return
+	 */
 	public static String getQueryString(Map<String, String[]> params) {
 		StringBuffer result = new StringBuffer("?");
 		for(Map.Entry<String, String[]> item : params.entrySet()) {
@@ -121,6 +125,23 @@ public class Utils {
 		return result.toString().substring(0, result.length() - 1);
 	}
 	
+	/**
+	 * 쿼리스트링 value 에 ip:port/value 로 지정해야 할 때.
+	 * @param params
+	 * @param ip
+	 * @param port
+	 * @return
+	 */
+	public static String getQueryString(Map<String, String[]> params, String ip, String port){
+		StringBuffer result = new StringBuffer("?");
+		StringBuffer value = new StringBuffer(Utils.getUrlForAddress(ip, port));
+		for(Map.Entry<String, String[]> item : params.entrySet()) {
+			value.append("/").append(item.getValue()[0]);
+			result.append(Utils.getAppendParam(item.getKey(), value.toString()));
+		}
+		return result.toString();
+	}
+
 	public static String getAppendParam(String key, String value) {
 		return String.format("%s=%s", key, value);
 	}
