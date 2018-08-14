@@ -172,4 +172,24 @@ public class FileUtils {
 		StringBuffer result = new StringBuffer(Base64.getEncoder().encodeToString(fileContent));
 		return result.toString();
 	}
+
+	/**
+	 * multipartfile -> file convert
+	 * 이 유틸을 사용하기 위해선 application.properties 에 spring.http.multipart.enabled = true 를 추가해야함.
+	 * @param file muiltifile
+	 * @return
+	 */
+	public static File convertFile(MultipartFile file) {
+		File convertFile = new File(file.getOriginalFilename());
+		try{
+			file.transferTo(convertFile);		
+		} catch(IllegalStateException e) {
+			// TODO : 에러 알아보고 처리하기
+			e.printStackTrace();
+		} catch (IOException e) {
+			logger.debug("FileUtils -----------------> [convertFile] convert File fail \n " + 
+		"\n please check file size => " + file.getSize() + "\n please check file contentType => " + file.getContentType());
+		}
+		return convertFile;
+	}
 }
