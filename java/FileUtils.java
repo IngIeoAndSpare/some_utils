@@ -192,4 +192,21 @@ public class FileUtils {
 		}
 		return convertFile;
 	}
+
+	/**
+	 * 	yamlfile validation
+	 *	사용하기 위해선 jackson-dataformat-yaml 의존성 필요
+	 * @param file 
+	 * @return
+	 */
+	public static boolean checkYamlValidation(MultipartFile file) {
+		ObjectMapper mapper = new ObjectMapper(new YAMLFactory());
+		try {
+			mapper.readTree(file.getBytes());
+		} catch (Exception e) {
+			logger.debug(e.getMessage());
+			throw new IOException("responseData.message.exception.io.yaml.parse.fail");
+		}
+		return true;
+	}
 }
