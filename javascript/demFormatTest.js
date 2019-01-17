@@ -1,7 +1,3 @@
-// DEM file format create and child creater
-// this module is create for testing
-// DO NOT USE ANYWERE.
-
 const ArraySize = 65,
       MaxValue = 10,
       MinValue = 0;
@@ -23,30 +19,56 @@ module.exports = {
         const centerValueCal = (num1, num2) => (num1 + num2) / 2;
         let forloopIndex = 0,
             forloopFlag = false;
-        let childArray = [];
+        let childArray = [],
+            contentArraycal = [],
+            zeroArraycal = [];
+        let tempArray = [];
+
         for(let item of sourceArray) {
             if(forloopIndex % ArraySize == 0) {
                 // content calculate flag
+                if(forloopFlag) {
+                    contentArraycal.push(tempArray);
+                    tempArray = [];
+                }
                 forloopFlag = !forloopFlag;
             }
             if(forloopFlag) {
                 // content array calculate
                 if(forloopIndex % 2 == 0 && ((forloopIndex % (ArraySize -1)) != 0) || forloopIndex == 0 || forloopIndex == 4160) {
                     let centerValue = centerValueCal(item, sourceArray[forloopIndex + 2]) 
-                    childArray.push(item, centerValue);
+                    tempArray.push(item, centerValue);
                 } else if ((forloopIndex % (ArraySize -1)) == 0) {
                     // content array last item input
-                    childArray.push(item);
+                    tempArray.push(item);
                     // console.log('number : ' + Math.floor(forloopIndex / ArraySize) + '    push item => ' + item + '     loopIndex => ' + forloopIndex);
                 }
-            } else {
-                // zero array calculate
-                let aheadArrayNumberIndex = (forloopIndex - ArraySize) + (forloopIndex % ArraySize),
-                    backArrayNumberIndex = (forloopIndex + ArraySize) + (forloopIndex % ArraySize);
-                let centerValue = centerValueCal(sourceArray[aheadArrayNumberIndex], sourceArray[backArrayNumberIndex]);
-                childArray.push(centerValue);
             }
             forloopIndex++;
+        }
+        // last content append
+        contentArraycal.push(tempArray);
+
+        for(var i = 0; i < contentArraycal.length - 1; i++) {
+            // zero array calculate
+            tempArray = [];
+            let aheadArray = contentArraycal[i];
+            let backArray = contentArraycal[i+1];
+            for(var j = 0; j < aheadArray.length; j ++) {
+                let centerValue = centerValueCal(aheadArray[j], backArray[j]);
+                tempArray.push(centerValue);
+            }
+            //console.log('check => ' + tempArray.length);
+            zeroArraycal.push(tempArray);
+        }
+    
+        for(var o = 0; o < contentArraycal.length; o++) {
+          if(o != contentArraycal.length - 1){
+              childArray.push.apply(childArray, contentArraycal[o]);
+              childArray.push.apply(childArray, zeroArraycal[o]);
+          } else {
+             childArray.push.apply(childArray, contentArraycal[o]);
+          }
         }
         return new Float32Array(childArray);
     },
@@ -105,10 +127,10 @@ module.exports = {
     },
     getCuttingArray : function (floorValue, targetArray) {
         // slice Array and return 
-        // 0 = (x : 33 ~ 65, y : 0 ~ 33)
-        // 1 = (x : 33 ~ 65, y : 33 ~ 65)
-        // 2 = (x : 0 ~ 33, y : 0 ~ 33)
-        // 3 = (x : 33 ~ 65, y : 33 ~ 65)
+        // 0 = (x : 0 ~ 33, y : 0 ~ 33)                            +-------------------+ (65,65)
+        // 1 = (x : 33 ~ 65, y : 0 ~ 33)                           |    2    |    3    |
+        // 2 = (x : 0 ~ 33, y : 33 ~ 65)                           |    0    |    1    |
+        // 3 = (x : 33 ~ 65, y : 33 ~ 65)                     (0,0)+---------+---------+   
 
         // center point
         let centerValue = Math.round(ArraySize/2);
